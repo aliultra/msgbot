@@ -7,10 +7,10 @@ if(!file_exists("iTelegram.php")){
 }
 require_once('iTelegram.php');
 use iTelegram\Bot;
-$channel		= "USERNAME";
-$admin			= "1234567890";
+$channel		= "aliultra";
+$admin			= "671062879";
 $api			= "https://api.ineo-team.ir"; # don't change it.
-define('API_KEY', "TELEGRAM_BOT_TOKEN");
+define('API_KEY', "5281541980:AAEWZkVWFLAKyu_oy4ksb96thu3MA44TWfs");
 function safe($input){
 	$array = ['$', ';', '"', "'", '<', '>'];
 	return str_replace($array, null, $input);
