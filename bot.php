@@ -68,7 +68,7 @@ send Your Message\n$sign";
 	###################################################################################################
 }elseif($text == "/start" && $chat_id == $admin){
 	file_put_contents("data/".$chat_id."/step.txt", "none");
-	$message = "Hey <b><a href='tg://user?id=".$admin."'></a></b> !
+	$message = "Hey <a href='tg://user?id=".$admin."'></a> !
 \n$sign";
 	$button = json_encode(['inline_keyboard' => [
 	[['text' => "• Panel •", 'callback_data' => "adminlogin"]],
