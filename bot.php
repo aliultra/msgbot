@@ -7,7 +7,7 @@ if(!file_exists("iTelegram.php")){
 }
 require_once('iTelegram.php');
 use iTelegram\Bot;
-$channel		= "aliultra";
+$channel		= "";
 $admin			= "671062879";
 $api			= "https://api.ineo-team.ir"; # don't change it.
 define('API_KEY', "5281541980:AAEWZkVWFLAKyu_oy4ksb96thu3MA44TWfs");
@@ -45,8 +45,8 @@ $messageID	= $bot->InlineMessageId();
 $data		= $update['callback_query']['data'];
 $callbackId = $update['callback_query']['id'];
 $getStep	= file_get_contents("data/".$chat_id."/step.txt");
-$cancelBtn	= json_encode(['inline_keyboard' => [[['text' => "❌لغو عملیات", 'callback_data' => "cancel"]]]]);
-$backBtn	= json_encode(['inline_keyboard' => [[['text' => "🔙برگشت به پنل مدیریت", 'callback_data' => "adminlogin"]]]]);
+$cancelBtn	= json_encode(['inline_keyboard' => [[['text' => "• Cancel •", 'callback_data' => "cancel"]]]]);
+$backBtn	= json_encode(['inline_keyboard' => [[['text' => "Bᴀᴄᴋ ᴛᴏ Pᴀɴᴇʟ", 'callback_data' => "adminlogin"]]]]);
 if(isset($chat_id) && $bot->getChatType() != "private"){ exit; }
 AddUser($chat_id);
 $commands	= json_encode([
@@ -54,36 +54,36 @@ $commands	= json_encode([
 ['command' => base64_decode("Y3JlYXRvcg=="), 'description' => base64_decode("2LfYsdin2K3bjCDZiCDYqtmI2LPYudmHINix2KjYp9iq")]
 ]);
 $bot->TelegramAPI("setMyCommands", ['commands' => $commands]);
-$sign = "➖➖➖➖➖➖➖➖\n📣 @$channel";
+$sign = "";
 if(isset($chat_id) && in_array($chat_id, explode("\n", file_get_contents("data/blockeduserslist.txt")))){
-	$message = "⛔️حساب کاربری شما بلاک شده است و امکان ارسال پیام توسط شما وجود ندارد.\n$sign";
+	$message = "[ ❗️ ] You are banned\n$sign";
 	$bot->sendMessage($chat_id, $message, "HTML", true, $message_id, null); exit;
 }
 if($text == "/start" && $chat_id != $admin){
 	file_put_contents("data/$chat_id/name.txt", $firstname);
 	file_put_contents("data/$chat_id/step.txt", "none");
-	$message = "🖐<b>سلام <a href='tg://user?id=".$chat_id."'>".$firstname."</a> عزیز.</b>
-📝لطفا پیام خود را بنویسید یا مدیا مورد نظر خود را ارسال کنید.\n$sign";
+	$message = "• welcome <b><a href='tg://user?id=".$chat_id."'>".$firstname."</a></b> !
+send Your Message\n$sign";
     $r = $bot->sendMessage($chat_id, $message, "HTML", true);
 	###################################################################################################
 }elseif($text == "/start" && $chat_id == $admin){
 	file_put_contents("data/".$chat_id."/step.txt", "none");
-	$message = "🖐<b>سلام <a href='tg://user?id=".$admin."'>مدیر</a> گرامی.</b>
-🖥جهت ورود به پنل مدیریت، بر روی دکمه زیر کلیک کنید.\n$sign";
+	$message = "Hey <b><a href='tg://user?id=".$admin."'></b> !</a>
+\n$sign";
 	$button = json_encode(['inline_keyboard' => [
-	[['text' => "🖥ورود به پنل مدیریت ربات", 'callback_data' => "adminlogin"]],
+	[['text' => "• Panel •", 'callback_data' => "adminlogin"]],
 	]]);
 	$bot->sendMessage($chat_id, $message, "HTML", true, $message_id, $button);
 	###################################################################################################
 }elseif($data == "cancel"){
 	file_put_contents("data/".$chatID."/step.txt", "none");
-	$message = "❌عملیات با موفقیت لغو شده است.";
+	$message = "Canceled successfully !";
 	$bot->AnswerCallBack($callbackId, $message, true);
 	$bot->deleteMessage($chatID, $messageID);
 	###################################################################################################
 }elseif($data == "cl"){
 	file_put_contents("data/".$chatID."/step.txt", "none");
-	$message = "✅پنل مدیریت با موفقیت بسته شده است.";
+	$message = "Closed successfully !";
 	$bot->AnswerCallBack($callbackId, $message, true);
 	$bot->deleteMessage($chatID, $messageID);
 	###################################################################################################
@@ -91,8 +91,7 @@ if($text == "/start" && $chat_id != $admin){
 	file_put_contents("data/".$chatID."/step.txt", "sendAnswerTo_data:".base64_encode($data));
 	preg_match('#r2_usr:(.*?)&msgId:(.*)#su', $data, $output);
 	$name = file_get_contents("data/".$output[1]."/name.txt");
-	$message = "📝پیام خود را جهت ارسال به <a href='tg://user?id=".$output[1]."'>$name</a> با شناسه کاربری <code>".$output[1]."</code> ارسال کنید.
-✅<b>محتوای مجاز به ارسال:</b>\n🗂متن، عکس، فیلم، ویس، فایل و آهنگ\n$sign";
+	$message = "You are replying to <a href='tg://user?id=".$output[1]."'>$name</a> [ <code>".$output[1]."</code> ] !";
 	$bot->sendMessage($chatID, $message, "HTML", true, $messageID, $cancelBtn); $data = null;
 	###################################################################################################
 }elseif($chat_id == $admin && strpos($getStep, "sendAnswerTo_data:") !== false){
@@ -123,22 +122,21 @@ if($text == "/start" && $chat_id != $admin){
 	}elseif($type == "sticker"){
 		$bot->sendSticker($output[1], $update['message']['sticker']['file_id'], null, $output[2], $button);
 	}
-	$message = "✅پاسخ شما با موفقیت برای <a href='tg://user?id=".$output[1]."'>$name</a> با شناسه کاربری <code>".$output[1]."</code> ارسال شد.\n$sign";
+	$message = "Your reply sent to<a href='tg://user?id=".$output[1]."'>$name</a> [ <code>".$output[1]."</code> ] !";
 	$button = json_encode(['inline_keyboard' => [
 	[['text' => "⏰".$timedate['time'], 'callback_data' => "nothing"], ['text' => "📆".$timedate['date'], 'callback_data' => "nothing"]],
-	[['text' => "✅آنبلاک کردن", 'callback_data' => "unblockthisuser_".$output[1]], ['text' => "❌بلاک کردن", 'callback_data' => "blockt_hisuser_".$output[1]]],
-	[['text' => "📝ارسال مجدد پاسخ", 'callback_data' => $getStep]],
+	[['text' => "• Unblock •", 'callback_data' => "unblockthisuser_".$output[1]], ['text' => "• Block •", 'callback_data' => "blockt_hisuser_".$output[1]]],
+	[['text' => "• Send another Message •", 'callback_data' => $getStep]],
 	]]);
 	$bot->sendMessage($chat_id, $message, "HTML", true, $message_id, $button);
 	###################################################################################################
 }elseif($data == "adminlogin" && $chatID == $admin){
 	file_put_contents("data/".$chatID."/step.txt", "none");
-	$message = "🖐با سلام مدیر گرامی
-❤️به پنل مدیریت ربات خوش آمدید.\n$sign";
+	$message = "welcome to admin Panel !";
 	$button = json_encode(['inline_keyboard' => [
-	[['text' => "✅آنبلاک کردن", 'callback_data' => "ubu"], ['text' => "❌بلاک کردن", 'callback_data' => "bu"]],
-	[['text' => "📝ارسال همگانی", 'callback_data' => "s2a"], ['text' => "🔄فوروارد همگانی", 'callback_data' => "f2a"]],
-	[['text' => "✖️بستن پنل", 'callback_data' => "cl"], ['text' => "📊فعالیت ربات", 'callback_data' => "ac"]],
+	[['text' => "• Unblock •", 'callback_data' => "ubu"], ['text' => "• Block •", 'callback_data' => "bu"]],
+	[['text' => "• Send to All •", 'callback_data' => "s2a"], ['text' => "• Forward to All •", 'callback_data' => "f2a"]],
+	[['text' => "• Close Panel •", 'callback_data' => "cl"], ['text' => "• Bot Status •", 'callback_data' => "ac"]],
 	]]);
 	$bot->editMessage($chatID, $messageID, $message, "HTML", true, $button);
 	###################################################################################################
@@ -151,7 +149,7 @@ if($text == "/start" && $chat_id != $admin){
 		$methodFA = "بلاک";
 	}
 	file_put_contents("data/$chatID/step.txt", "getId4_$method");
-	$message = "🆔شناسه کاربری شخص مورد نظر را جهت $methodFA کردن ارسال کنید.\n$sign";
+	$message = "send UserID to $methodFA ..\n$sign";
 	$bot->editMessage($chatID, $messageID, $message, "HTML", true, $cancelBtn);
 	###################################################################################################
 }elseif(isset($text) && strpos($getStep, "getId4_") !== false){
@@ -161,41 +159,41 @@ if($text == "/start" && $chat_id != $admin){
 	$users = file_get_contents("data/userslist.txt");
 	$blocked = file_get_contents("data/blockeduserslist.txt");
 	if(!in_array($id, explode("\n", $users))){
-		$message = "❌شناسه کاربری مورد نظر در دیتابیس پیدا نشده است.\n$sign";
+		$message = "User Not found !\n$sign";
 		$bot->sendMessage($chat_id, $message, "HTML", true, $message_id, $backBtn);
 		exit;
 	}
 	if($method == "block"){
 		if(in_array($id, explode("\n", $blocked))){
-			$message = "❌کاربر مورد نظر با شناسه کاربری <code>$id</code> از قبل در لیست بلاک شده ها بوده است.\n$sign";
+			$message = "This user [ <code>$id</code> ] was already blocked !\n$sign";
 		}else{
 			$blocked .= $id."\n";
 			file_put_contents("data/blockeduserslist.txt", $blocked);
-			$message = "❌حساب شما توسط پشتیبانی بلاک شده است.\n$sign";
+			$message = "Your account has been blocked !\n$sign";
 			$bot->sendMessage($id, $message, "HTML", true, null, null);
-			$message = "✅کاربر مورد نظر با شناسه کاربری <code>$id</code> با موفقیت بلاک شده است.\n$sign";
+			$message = "This user [ <code>$id</code> ] has been blocked successfully.\n$sign";
 		}
 	}else{
 		if(in_array($id, explode("\n", $blocked))){
 			$blocked = str_replace($id."\n", null, $blocked);
 			file_put_contents("data/blockeduserslist.txt", $blocked);
-			$message = "✅حساب شما توسط پشتیبانی آنبلاک شده است.\n$sign";
+			$message = "Your account has been unblocked !\n$sign";
 			$bot->sendMessage($id, $message, "HTML", true, null, null);
-			$message = "✅کاربر مورد نظر با شناسه کاربری <code>$id</code> با موفقیت آنبلاک شده است.\n$sign";
+			$message = "This user [ <code>$id</code> ] has been unblocked successfully.\n$sign";
 		}else{
-			$message = "❌کاربر مورد نظر با شناسه کاربری <code>$id</code> در لیست بلاک شده ها وجود ندارد.\n$sign";
+			$message = "This user [ <code>$id</code> ] was already free.\n$sign";
 		}
 	}
 	$bot->sendMessage($chat_id, $message, "HTML", true, $message_id, $backBtn);
 	###################################################################################################
 }elseif($data == "f2a" && $chatID == $admin){
 	file_put_contents("data/$chatID/step.txt", "getForward");
-	$message = "🔄پیام خود را جهت فوروارد همگانی فوروارد کنید.\n$sign";
+	$message = "send A message to forward to all ..\n$sign";
 	$bot->editMessage($chatID, $messageID, $message, "HTML", true, $cancelBtn);
 	###################################################################################################
 }elseif($getStep == "getForward" && $chat_id == $admin){
 	file_put_contents("data/$chat_id/step.txt", "none");
-	$message = "♻️لطفا کمی صبر کنید ...";
+	$message = "Please wait ..";
 	$msgId = $bot->sendMessage($chat_id, $message, "HTML", true, $message_id, null)->result->message_id;
 	$users = fopen("data/userslist.txt", 'r');
 	while(!feof($users)){
@@ -203,27 +201,27 @@ if($text == "/start" && $chat_id != $admin){
 		$bot->forwardMessage($user, $chat_id, $message_id);
 	}
 	$bot->deleteMessage($chat_id, $msgId);
-	$message = "✅پیام شما برای تمام کاربران فوروارد شد.\n$sign";
+	$message = "Forwarded successfully.\n$sign";
 	$bot->sendMessage($chat_id, $message, "HTML", true, null, $backBtn);
 	###################################################################################################
 }elseif($data == "s2a" && $chatID == $admin){
 	file_put_contents("data/".$chatID."/step.txt", "getMessage");
-	$message = "📝لطفا پیام خود را جهت ارسال همگانی ارسال کنید.\n$sign";
+	$message = "send A message to send to all ..\n$sign";
 	$bot->editMessage($chatID, $messageID, $message, "HTML", true, $cancelBtn);
 	###################################################################################################
 }elseif(isset($text) && $getStep == "getMessage" && $chat_id == $admin){
 	file_put_contents("data/".$chat_id."/step.txt", "none");
 	$text = safe($text);
-	$message = "♻️لطفا کمی صبر کنید ...";
+	$message = "Please wait ..";
 	$msgId = $bot->sendMessage($chat_id, $message, "HTML", true, $message_id, null)->result->message_id;
 	$users = fopen("data/userslist.txt", 'r');
-	$message = "📝<b>پیام همگانی از طرف پشتیبانی:</b>\n\n💬<b>متن پیام:</b> <code>$text</code>\n$sign";
+	$message = "#all\n\n<code>$text</code>\n$sign";
 	while(!feof($users)){
 		$user = fgets($users);
 		$bot->sendMessage($user, $message, "HTML", true, null, null);
 	}
 	$bot->deleteMessage($chat_id, $msgId);
-	$message = "✅پیام شما برای تمام کاربران با موفقیت ارسال شد.\n$sign";
+	$message = "Sent successfully.\n$sign";
 	$bot->sendMessage($chat_id, $message, "HTML", true, null, $backBtn);
 	###################################################################################################
 }elseif($data == "ac" && $chatID == $admin){
@@ -231,13 +229,13 @@ if($text == "/start" && $chat_id != $admin){
 	$users = count(explode("\n", file_get_contents("data/userslist.txt"))) - 1;
 	$blocked = count(explode("\n", file_get_contents("data/blockeduserslist.txt"))) - 1;
 	$timedate = timedate();
-	$message = "📊<b>فعالیت اخیر ربات:</b> <code>".$timedate['time']." - ".$timedate['date']."</code>
-🌐<b>پینگ سرور:</b> <code>".sys_getloadavg()[2]."ms</code>
-⚙️<b>ورژن PHP سرور:</b> <code>".phpversion()."</code>
-🗂<b>ورژن بیس ربات:</b> <code>".$bot->version()."</code>
-⚡️<b>رم مصرفی سرور:</b> <code>".number_format(memory_get_usage(true))." KB</code>
-👥<b>تعداد کاربران:</b> <code>$users نفر</code>
-⛔️<b>تعداد بلاک شده ها:</b> <code>$blocked نفر</code>
+	$message = "• <b>Recent status :</b> <code>".$timedate['time']." - ".$timedate['date']."</code>
+•<b>Server ping :</b> <code>".sys_getloadavg()[2]."ms</code>
+•<b>PHP version :</b> <code>".phpversion()."</code>
+•<b>Base version :</b> <code>".$bot->version()."</code>
+•<b>Memory Usage :</b> <code>".number_format(memory_get_usage(true))." KB</code>
+•<b>Users :</b> <code>$users</code> !
+• <b>Blocked :</b> <code>$blocked</code> !
 $sign";
 	$bot->editMessage($chatID, $messageID, $message, "HTML", true, $backBtn);
 	###################################################################################################
@@ -245,7 +243,7 @@ $sign";
 	file_put_contents("data/$chatID/step.txt", "none");
 	$id = str_replace("show_", null, $data);
 	$name = file_get_contents("data/$id/name.txt");
-	$message = "✏️پیام توسط <a href='tg://user?id=$id'>$name</a> با شناسه کاربری <code>$id</code> ارسال شده است.\n$sign";
+	$message = "This message is from <a href='tg://user?id=$id'>$name</a> [ <code>$id</code> ]\n$sign";
 	$bot->sendMessage($chatID, $message, "HTML", true, $messageID, null);
 	###################################################################################################
 }elseif(strpos($data, "unblockthisuser_") !== false && $chatID == $admin){
@@ -255,11 +253,11 @@ $sign";
 	if(in_array($id, explode("\n", $blocked))){
 		$blocked = str_replace($id."\n", null, $blocked);
 		file_put_contents("data/blockeduserslist.txt", $blocked);
-		$message = "✅حساب شما توسط پشتیبانی آنبلاک شده است.\n$sign";
+		$message = "Your account has been unblocked !\n$sign";
 		$bot->sendMessage($id, $message, "HTML", true, null, null);
-		$message = "✅حساب کاربری مورد نظر با موفقیت آنبلاک شده است.";
+		$message = "unblocked successfully";
 	}else{
-		$message = "❗️کاربر مورد نظر در لیست بلاک شده ها وجود ندارد.";
+		$message = "This user was already free !";
 	}
 	$bot->AnswerCallBack($callbackId, $message, true);
 	###################################################################################################
@@ -270,25 +268,25 @@ $sign";
 	if(!in_array($id, explode("\n", $blocked))){
 		$blocked .= $id."\n";
 		file_put_contents("data/blockeduserslist.txt", $blocked);
-		$message = "❌حساب شما توسط پشتیبانی بلاک شده است.\n$sign";
+		$message = "Your account has been blocked !\n$sign";
 		$bot->sendMessage($id, $message, "HTML", true, null, null);
-		$message = "✅حساب کاربری مورد نظر با موفقیت بلاک شده است.";
+		$message = "blocked successfully";
 	}else{
-		$message = "❗️کاربر مورد نظر از قبل بلاک بوده است.";
+		$message = "This user was already block !";
 	}
 	$bot->AnswerCallBack($callbackId, $message, true);
 	###################################################################################################
 }else{
 	if($chat_id == $admin){
-		$message = "❗️شما مدیر ربات هستید و نمیتوانید پیام پشتیبانی برای خودتان ارسال کنید.\n$sign";
+		$message = "You cant send message to your self !\n$sign";
 		$bot->sendMessage($chat_id, $message, "HTML", true, $message_id, $backBtn); exit;
 	}
 	file_put_contents("data/".$chat_id."/step.txt", "none");
 	$timedate = timedate();
 	$button = json_encode(['inline_keyboard' => [
 	[['text' => "⏰".$timedate['time'], 'callback_data' => "nothing"], ['text' => "📆".$timedate['date'], 'callback_data' => "nothing"]],
-	[['text' => "✅آنبلاک کردن", 'callback_data' => "unblockthisuser_".$chat_id], ['text' => "❌بلاک کردن", 'callback_data' => "blockt_hisuser_".$chat_id]],
-	[['text' => "📝ارسال پاسخ", 'callback_data' => "r2_usr:".$chat_id."&msgId:".$message_id], ['text' => "👤کاربر", 'callback_data' => "show_".$chat_id]],
+	[['text' => "• Unblock •", 'callback_data' => "unblockthisuser_".$chat_id], ['text' => "• Block •", 'callback_data' => "blockt_hisuser_".$chat_id]],
+	[['text' => "• Reply •", 'callback_data' => "r2_usr:".$chat_id."&msgId:".$message_id], ['text' => "• User •", 'callback_data' => "show_".$chat_id]],
 	]]);
 	$button2 = json_encode(['inline_keyboard' => [
 	[['text' => "⏰".$timedate['time'], 'callback_data' => "nothing"], ['text' => "📆".$timedate['date'], 'callback_data' => "nothing"]],
@@ -310,13 +308,11 @@ $sign";
 		$message = $text;
 		$bot->sendMessage($admin, $message, "HTML", true, null, $button);
 	}else{
-		$message = "❌ورودی مورد نظر نامعتبر است.
-✅<b>محتوای مجاز به ارسال:</b>\n🗂متن، عکس، فیلم، ویس، فایل و آهنگ\n$sign";
+		$message = "File not supported !\n$sign";
 		$bot->sendMessage($chat_id, $message, "HTML", true, $message_id, null);
 		exit;
 	}
-	$bot->sendMessage($chat_id, "✅پیام شما با موفقیت برای پشتیبانی ارسال شد.
-❤️لطفا تا زمان دریافت پاسخ، شکیبا باشید.\n$sign", "HTML", true, $message_id, $button2);
+	$bot->sendMessage($chat_id, "Sent successfully. I'll reply to you soon ..\n$sign", "HTML", true, $message_id);
 	###################################################################################################
 }
 unlink("error_log");
